@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+
+Parameters:
+  BaseName:
+    Type: String
+    Description: Base name for all resources
+    Default: raistech202210-cfn
+Resources:
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: !Ref BaseName # Required
+      DBSubnetGroupName: !Sub "${BaseName}-rds-subnet-group"
+      SubnetIds: # Required
+        - Fn::ImportValue: !Sub "${BaseName}-PrivateSubnet1Id"
+        - Fn::ImportValue: !Sub "${BaseName}-PrivateSubnet2Id"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${BaseName}-rds-subnet-group"
+  DBInstance:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Delete
+    Properties:
+      AllocatedStorage: "20"
+      AllowMajorVersionUpgrade: false
+      AutoMinorVersionUpgrade: false
+      AvailabilityZone: !Sub "${AWS::Region}a"
+      CopyTagsToSnapshot: false
+      DBInstanceClass: "db.t2.micro"
+      DBInstanceIdentifier: !Sub "${BaseName}-rds"
+      # DBName: "String"
+      # DBParameterGroupName: "String"
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      DeletionProtection: false
+      Engine: "mysql"
+      EngineVersion: "8.0.28"
+      MasterUserPassword: "ia08ES+KRc"
+      MasterUsername: "root"
+      MultiAZ: false
+      # OptionGroupName: "String"
+      PubliclyAccessible: false
+      StorageEncrypted: false
+      StorageType: "gp2"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${BaseName}-rds"
+      VPCSecurityGroups:
+        - Fn::ImportValue: !Sub "${BaseName}-RdsSecurityGroupId"
