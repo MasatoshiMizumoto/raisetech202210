@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: '2010-09-09'
+# Description: |
+
+Parameters:
+  BaseName:
+    Type: String
+    Description: Base name for all resources
+    Default: raistech202210-cfn
+  ImageId:
+    Type: AWS::EC2::Image::Id
+    Description: AMI ID
+    Default: ami-078296f82eb463377
+  InstanceType:
+    Type: String
+    Description: EC2 instance type
+    Default: t3.micro
+
+Resources:
+  Ec2:
+    Type: AWS::EC2::Instance
+    Properties:
+      DisableApiTermination: false
+      EbsOptimized: true
+      IamInstanceProfile: "base-ec2-ap-northeast-1"
+      ImageId: !Ref ImageId
+      InstanceType: !Ref InstanceType
+      # KeyName: "String"
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          GroupSet:
+            - Fn::ImportValue: !Sub "${BaseName}-Ec2SecurityGroupId"
+          PrivateIpAddresses:
+            - Primary: true
+              PrivateIpAddress: "10.0.10.25"
+          SubnetId:
+            Fn::ImportValue: !Sub "${BaseName}-PublicSubnet1Id"
+      PropagateTagsToVolumeOnCreation: true
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${BaseName}-ec2"
+
+Outputs:
+  Ec2Id:
+    Description: "EC2 ID"
+    Value: !Ref Ec2
+    Export:
+      Name: !Sub "${BaseName}-Ec2Id"

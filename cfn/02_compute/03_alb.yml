@@ -1,0 +1,142 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+
+Parameters:
+  BaseName:
+    Type: String
+    Description: Base name for all resources
+    Default: raistech202210-cfn
+  Email:
+    Type: String
+    Description: Email address for Alarm
+    Default: "changeme@mail.internal"
+
+Resources:
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      LoadBalancerAttributes:
+        - Key: "deletion_protection.enabled"
+          Value: false
+        - Key: "idle_timeout.timeout_seconds"
+          Value: 60
+      Name: !Sub "${BaseName}-alb"
+      Scheme: "internet-facing"
+      SecurityGroups:
+        - Fn::ImportValue: !Sub "${BaseName}-AlbSecurityGroupId"
+      Subnets:
+        - Fn::ImportValue: !Sub "${BaseName}-PublicSubnet1Id"
+        - Fn::ImportValue: !Sub "${BaseName}-PublicSubnet2Id"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${BaseName}-alb"
+      Type: application
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions: # Required
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: 80
+      Protocol: "HTTP"
+      # SslPolicy: "String"
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+      HealthCheckTimeoutSeconds: 5
+      HealthCheckIntervalSeconds: 10
+      Matcher:
+        HttpCode: "200"
+      Name: !Sub "${BaseName}--tg"
+      Port: 80
+      Protocol: HTTP
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${BaseName}--tg"
+      TargetGroupAttributes:
+        - Key: "deregistration_delay.timeout_seconds"
+          Value: 300
+        - Key: "stickiness.enabled"
+          Value: false
+        - Key: "stickiness.type"
+          Value: lb_cookie
+        - Key: "stickiness.lb_cookie.duration_seconds"
+          Value: 86400
+      TargetType: "instance"
+      Targets:
+        - Id:
+            Fn::ImportValue: !Sub "${BaseName}-Ec2Id"
+          Port: 80
+      VpcId:
+        Fn::ImportValue: !Sub "${BaseName}-VpcId"
+
+  UnHealthyHostCountAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      ActionsEnabled: true
+      AlarmActions:
+        - !Ref EmailTopic
+      # AlarmDescription: "String"
+      AlarmName: !Sub "${BaseName}-alarm"
+      ComparisonOperator: "GreaterThanThreshold" # Required
+      DatapointsToAlarm: 1
+      Dimensions:
+      - Name: "TargetGroup"
+        Value: !Ref TargetGroup
+      - Name: "LoadBalancer"
+        Value: !Ref LoadBalancer
+      # EvaluateLowSampleCountPercentile: "String"
+      EvaluationPeriods: 1 # Required
+      # ExtendedStatistic: "String"
+      # InsufficientDataActions:
+      #   InsufficientDataActions
+      MetricName: "UnHealthyHostCount"
+      # Metrics:
+      #   Metrics
+      Namespace: "AWS/ApplicationELB"
+      OKActions:
+        - !Ref EmailTopic
+      Period: 300
+      Statistic: "Minimum"
+      Threshold: 0
+      TreatMissingData: "breaching"
+      Unit: "Count"
+
+  EmailTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      # ContentBasedDeduplication: false
+      # DataProtectionPolicy: JSON
+      DisplayName: !Sub "${BaseName}-EmailTopic"
+      # FifoTopic: false
+      # KmsMasterKeyId: "String"
+      # SignatureVersion: "String"
+      # Subscription:
+      #   Subscription
+      # Tags:
+      #   Tags
+      TopicName: !Sub "${BaseName}-EmailTopic"
+
+  EmailSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      # DeliveryPolicy: JSON
+      Endpoint: !Ref Email
+      # FilterPolicy: JSON
+      Protocol: "email" # Required
+      # RawMessageDelivery: false
+      # RedrivePolicy: JSON
+      # Region: "String"
+      # SubscriptionRoleArn: "String"
+      TopicArn: !Ref EmailTopic # Required
+
+Outputs:
+  LoadBalancerDnsName:
+    Description: DNS name of the load balancer
+    Value: !GetAtt LoadBalancer.DNSName
+    Export:
+      Name: !Sub "${BaseName}-LoadBalancerDnsName"

@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+
+Parameters:
+  BaseName:
+    Type: String
+    Description: Base name for all resources
+    Default: raistech202210-cfn
+
+Resources:
+  Ec2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "for EC2" # Required
+      GroupName: !Sub "${BaseName}-ec2-sg"
+      SecurityGroupIngress:
+        - Description: "from ALB"
+          FromPort: 80
+          ToPort: 80
+          IpProtocol: "tcp"
+          SourceSecurityGroupId: !Ref AlbSecurityGroup
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${BaseName}-ec2-sg"
+      VpcId:
+        Fn::ImportValue: !Sub "${BaseName}-VpcId"
+  AlbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "for ALB" # Required
+      GroupName: !Sub "${BaseName}-alb-sg"
+      SecurityGroupIngress:
+        - Description: "from ALB"
+          FromPort: 80
+          ToPort: 80
+          IpProtocol: "tcp"
+          CidrIp: "0.0.0.0/0"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${BaseName}-alb-sg"
+      VpcId:
+        Fn::ImportValue: !Sub "${BaseName}-VpcId"
+  RdsSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "for RDS" # Required
+      GroupName: !Sub "${BaseName}-rds-sg"
+      SecurityGroupIngress:
+        - Description: "from EC2"
+          FromPort: 3306
+          ToPort: 3306
+          IpProtocol: "tcp"
+          SourceSecurityGroupId: !Ref Ec2SecurityGroup
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${BaseName}-rds-sg"
+      VpcId:
+        Fn::ImportValue: !Sub "${BaseName}-VpcId"
+
+Outputs:
+  Ec2SecurityGroupId:
+    Description: "EC2 Security Group ID"
+    Value: !Ref Ec2SecurityGroup
+    Export:
+      Name: !Sub "${BaseName}-Ec2SecurityGroupId"
+  AlbSecurityGroupId:
+    Description: "ALB Security Group ID"
+    Value: !Ref AlbSecurityGroup
+    Export:
+      Name: !Sub "${BaseName}-AlbSecurityGroupId"
+  RdsSecurityGroupId:
+    Description: "RDS Security Group ID"
+    Value: !Ref RdsSecurityGroup
+    Export:
+      Name: !Sub "${BaseName}-RdsSecurityGroupId"
