@@ -6,6 +6,10 @@ Parameters:
     Type: String
     Description: Base name for all resources
     Default: raistech202210-cfn
+  DbPassword:
+    Type: String
+    Description: Password for the database
+    NoEcho: true
 Resources:
   DBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
@@ -35,7 +39,8 @@ Resources:
       DeletionProtection: false
       Engine: "mysql"
       EngineVersion: "8.0.28"
-      MasterUserPassword: "ia08ES+KRc"
+      # MasterUserPassword: "ia08ES+KRc"
+      MasterUserPassword: !Ref DbPassword
       MasterUsername: "root"
       MultiAZ: false
       # OptionGroupName: "String"
