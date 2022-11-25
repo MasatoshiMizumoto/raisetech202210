@@ -1,0 +1,13 @@
+project:
+  name: raisetech202210
+  regions:
+    - ap-northeast-1
+tests:
+  root:
+    template: ./cfn/root_stack.yml
+    parameters:
+      TemplateVPC: https://s3.amazonaws.com/$[taskcat_autobucket]/$[taskcat_project_name]/cfn/01_network/01_vpc.yml
+      TemplateSG: https://s3.amazonaws.com/$[taskcat_autobucket]/$[taskcat_project_name]/cfn/01_network/02_sg.yml
+      TemplateEC2: https://s3.amazonaws.com/$[taskcat_autobucket]/$[taskcat_project_name]/cfn/02_compute/01_ec2.yml
+      TemplateRDS: https://s3.amazonaws.com/$[taskcat_autobucket]/$[taskcat_project_name]/cfn/02_compute/02_rds.yml
+      TemplateALB: https://s3.amazonaws.com/$[taskcat_autobucket]/$[taskcat_project_name]/cfn/02_compute/03_alb.yml

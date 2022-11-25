@@ -5,9 +5,8 @@
 ### やること
 
 - CircleCIにServerSpecとAnsibleの処理を追加する
-  - 1）Cfnのデプロイ
-    - test=taskcatで
-    - deploy=cliで
+  - 1）Cfnのテスト
+    - taskcatで
   - 2）ServerSpecは何をテストする？
     - ポートのリッスン
     - パッケージインストールチェック
@@ -23,4 +22,3 @@
       - rails
 
 ### やらないこと
-

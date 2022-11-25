@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: root stack template
+Parameters:
+  TemplateVPC:
+    Description: VPC template URL(https://)
+    Type: String
+  TemplateSG:
+    Description: SG template URL(https://)
+    Type: String
+  TemplateEC2:
+    Description: EC2 template URL(https://)
+    Type: String
+  TemplateRDS:
+    Description: RDS template URL(https://)
+    Type: String
+  TemplateALB:
+    Description: ALB template URL(https://)
+    Type: String
+Resources:
+  VPC:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref TemplateVPC
+  SG:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref TemplateSG
+    DependsOn: VPC
+  EC2:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref TemplateEC2
+    DependsOn: SG
+  RDS:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref TemplateRDS
+    DependsOn: SG
+  ALB:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref TemplateALB
+    DependsOn: EC2
