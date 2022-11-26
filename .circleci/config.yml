@@ -22,8 +22,8 @@ jobs:
   tackcat-test:
     executor: aws-cli/default
     steps:
-      # - aws-cli/setup:
-      #     profile-name: default
+      - aws-cli/setup:
+          profile-name: default
       - checkout
       - run: pip install taskcat
       - run: aws s3 ls
