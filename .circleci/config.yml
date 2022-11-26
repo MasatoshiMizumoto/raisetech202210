@@ -19,8 +19,8 @@ jobs:
             cfn-lint -i W3002 -t cfn/*/*.yml
   tackcat-test:
     executor: aws-cli/default
-      - checkout
     steps:
+      - checkout
       - run: pip install taskcat
       - run: taskcat test run
 
