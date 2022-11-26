@@ -8,7 +8,6 @@ jobs:
     steps:
       - aws-cli/setup:
           profile-name: default
-          aws-region: ap-northeast-1
   cfn-lint:
     executor: aws-cli/default
     steps:
