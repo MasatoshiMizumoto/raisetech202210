@@ -28,5 +28,9 @@ workflows:
   raisetech:
     jobs:
       - aws-cli-setup
-      - cfn-lint
-      - tackcat-test
+      - cfn-lint:
+          requires:
+            - aws-cli-setup
+      - tackcat-test:
+          requires:
+            - aws-cli-setup
