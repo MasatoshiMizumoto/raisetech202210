@@ -11,8 +11,8 @@ jobs:
   cfn-lint:
     executor: aws-cli/default
     steps:
-      - aws-cli/setup:
-          profile-name: default
+      # - aws-cli/setup:
+      #     profile-name: default
       - checkout
       - run: pip install cfn-lint
       - run:
@@ -22,8 +22,8 @@ jobs:
   tackcat-test:
     executor: aws-cli/default
     steps:
-      # - aws-cli/setup:
-      #     profile-name: default
+      - aws-cli/setup:
+          profile-name: default
       - checkout
       - run: pip install taskcat
       - run: aws s3 ls
@@ -47,9 +47,9 @@ workflows:
   raisetech:
     jobs:
       - aws-cli-setup
-      - cfn-lint:
-          requires:
-            - aws-cli-setup
+      # - cfn-lint:
+      #     requires:
+      #       - aws-cli-setup
       - tackcat-test:
           requires:
             - aws-cli-setup
