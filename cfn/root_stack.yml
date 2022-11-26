@@ -16,6 +16,10 @@ Parameters:
   TemplateALB:
     Description: ALB template URL(https://)
     Type: String
+  DbPassword:
+    Description: Password for RDS
+    Type: String
+    NoEcho: true
 Resources:
   VPC:
     Type: AWS::CloudFormation::Stack
@@ -35,6 +39,8 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Ref TemplateRDS
+      Parameters:
+        DbPassword: !Ref DbPassword
     DependsOn: SG
   ALB:
     Type: AWS::CloudFormation::Stack

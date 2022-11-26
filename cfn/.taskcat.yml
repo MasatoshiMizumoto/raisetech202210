@@ -11,3 +11,4 @@ tests:
       TemplateEC2: https://s3.amazonaws.com/$[taskcat_autobucket]/$[taskcat_project_name]/02_compute/01_ec2.yml
       TemplateRDS: https://s3.amazonaws.com/$[taskcat_autobucket]/$[taskcat_project_name]/02_compute/02_rds.yml
       TemplateALB: https://s3.amazonaws.com/$[taskcat_autobucket]/$[taskcat_project_name]/02_compute/03_alb.yml
+      DbPassword: $[taskcat_genpass_8A]
