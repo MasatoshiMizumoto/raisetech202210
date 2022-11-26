@@ -25,25 +25,34 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Ref TemplateVPC
+      Parameters:
+        BaseName: raisetech202210-taskcat
   SG:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Ref TemplateSG
+      Parameters:
+        BaseName: raisetech202210-taskcat
     DependsOn: VPC
   EC2:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Ref TemplateEC2
+      Parameters:
+        BaseName: raisetech202210-taskcat
     DependsOn: SG
   RDS:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Ref TemplateRDS
       Parameters:
+        BaseName: raisetech202210-taskcat
         DbPassword: !Ref DbPassword
     DependsOn: SG
   ALB:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Ref TemplateALB
+      Parameters:
+        BaseName: raisetech202210-taskcat
     DependsOn: EC2

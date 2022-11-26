@@ -28,11 +28,6 @@ jobs:
             cd cfn
             taskcat test run -m -d
           no_output_timeout: 30m #default 10m
-  remove-test-bucket:
-    executor: aws-cli/default
-    steps:
-      - aws-cli/setup:
-          profile-name: default
       - run:
           name: remove taskcat bucket
           command: aws s3 ls | awk '{print $3}' | grep "^tcat" | xargs -I {} aws s3 rb s3://{} --force
@@ -44,6 +39,3 @@ workflows:
       #     requires:
       #       - aws-cli-setup
       - tackcat-test
-      - remove-test-bucket:
-          requires:
-            - tackcat-test
