@@ -22,7 +22,21 @@ jobs:
     steps:
       - checkout
       - run: pip install taskcat
-      - run: cd cfn && taskcat test run -m
+      - run:
+          name: upload templates
+          command: |
+            cd cfn
+            taskcat upload
+      - run:
+          name: run test
+          command: |
+            cd cfn
+            taskcat test run -m -d
+      # - run:
+      #     name: delete test
+      #     command: |
+      #       cd cfn
+      #       taskcat delete raisetech202210
 
 workflows:
   raisetech:
