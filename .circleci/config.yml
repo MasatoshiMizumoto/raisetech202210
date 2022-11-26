@@ -26,6 +26,7 @@ jobs:
       #     profile-name: default
       - checkout
       - run: pip install taskcat
+      - run: aws s3 ls
       - run:
           name: upload templates
           command: |
