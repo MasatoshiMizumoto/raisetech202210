@@ -22,7 +22,7 @@ jobs:
     steps:
       - checkout
       - run: pip install taskcat
-      - run: taskcat test run
+      - run: taskcat test run -m
 
 workflows:
   raisetech:
