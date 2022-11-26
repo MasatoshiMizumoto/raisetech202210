@@ -30,8 +30,7 @@ jobs:
           name: upload templates
           command: |
             cd cfn
-            ls
-            taskcat upload
+            taskcat --profile default upload
       - run:
           name: run test
           command: |
