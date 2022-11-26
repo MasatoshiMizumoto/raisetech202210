@@ -26,12 +26,12 @@ jobs:
           name: upload templates
           command: |
             cd cfn
+            ls
             taskcat upload
       - run:
           name: run test
           command: |
             cd cfn
-            ls
             taskcat test run -m -d
       # - run:
       #     name: delete test
