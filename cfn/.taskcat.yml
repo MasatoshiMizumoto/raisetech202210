@@ -4,7 +4,7 @@ project:
     - ap-northeast-1
 tests:
   root:
-    template: ./root_stack.yml
+    template: root_stack.yml
     parameters:
       TemplateVPC: https://s3.amazonaws.com/$[taskcat_autobucket]/$[taskcat_project_name]/01_network/01_vpc.yml
       TemplateSG: https://s3.amazonaws.com/$[taskcat_autobucket]/$[taskcat_project_name]/01_network/02_sg.yml
