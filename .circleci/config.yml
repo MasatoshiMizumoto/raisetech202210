@@ -21,9 +21,8 @@ jobs:
     executor: aws-cli/default
     steps:
       - checkout
-      - run: ls -la
       - run: pip install taskcat
-      - run: taskcat test run -m
+      - run: cd cfn && taskcat upload -m
 
 workflows:
   raisetech:
