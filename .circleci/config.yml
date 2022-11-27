@@ -17,7 +17,7 @@ jobs:
   # ----------
   # test
   # ----------
-  tackcat-test:
+  taskcat-test:
     executor: aws-cli/default
     steps:
       - aws-cli/setup:
@@ -86,13 +86,13 @@ workflows:
   raisetech:
     jobs:
       - cfn-lint
-      - tackcat-test:
+      - taskcat-test:
           requires:
             - cfn-lint
       - deploy-approve:
           type: approval
           requires:
-            - tackcat-test
+            - taskcat-test
       - cloudformation-deploy:
           requires:
             - deploy-approve
