@@ -37,9 +37,9 @@ Resources:
           DeviceIndex: 0
           GroupSet:
             - Fn::ImportValue: !Sub "${BaseName}-Ec2SecurityGroupId"
-          PrivateIpAddresses:
-            - Primary: true
-              PrivateIpAddress: "10.0.10.25"
+          # PrivateIpAddresses:
+          #   - Primary: true
+          #     PrivateIpAddress: "10.0.10.25"
           SubnetId:
             Fn::ImportValue: !Sub "${BaseName}-PublicSubnet1Id"
       PropagateTagsToVolumeOnCreation: true
