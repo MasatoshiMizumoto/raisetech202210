@@ -15,7 +15,7 @@ jobs:
           command: |
             cfn-lint -i W3002 -t cfn/*/*.yml
   # ----------
-  # test
+  # infra test
   # ----------
   taskcat-test:
     executor: aws-cli/default
@@ -81,7 +81,40 @@ jobs:
               --stack-name raisetech202210-alb \
               --template-file cfn/02_compute/03_alb.yml \
               --capabilities CAPABILITY_NAMED_IAM
-
+  # ----------
+  # OS test
+  # ----------
+  serverspec:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - aws-cli/setup:
+          profile-name: default
+      - run:
+          name: get ec2 public ip
+          command: |
+            export EC2_PUBLIC_IP=$(aws ec2 describe-instances --filter "Name=tag:Name,Values=raistech202210-cfn-ec2" --query 'Reservations[].Instances[].PublicIpAddress|[0]' --output text)
+            echo "export EC2_PUBLIC_IP=$EC2_PUBLIC_IP" >> $BASH_ENV
+      - run:
+          name: add ssh key from aws parameter store
+          command: |
+            mkdir -p ~/.ssh
+            KeyPairID=$(aws ec2 describe-key-pairs --key-names "raisetech202210-cfn-keypair" --query 'KeyPairs[].KeyPairId' --output text)
+            echo $(aws ssm get-parameter --name /ec2/keypair/${KeyPairID} --with-decryption --query Parameter.Value --output text) > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+      - run:
+          name: install serverspec
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y ruby ruby-dev build-essential
+            sudo gem install bundler
+            cd serverspec
+            bundle install --path vendor/bundle
+      - run:
+          name: run serverspec
+          command: |
+            cd serverspec
+            bundle exec rake spec
 workflows:
   raisetech:
     jobs:

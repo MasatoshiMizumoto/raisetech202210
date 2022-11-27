@@ -16,6 +16,13 @@ Parameters:
     Default: t3.micro
 
 Resources:
+  KeyPair:
+    Type: AWS::EC2::KeyPair
+    Properties:
+      KeyName: !Sub "${BaseName}-keypair"
+      Tags:
+        - Key: "Name"
+          Value: !Sub "${BaseName}-keypair"
   Ec2:
     Type: AWS::EC2::Instance
     Properties:
@@ -24,7 +31,7 @@ Resources:
       IamInstanceProfile: "base-ec2-ap-northeast-1"
       ImageId: !Ref ImageId
       InstanceType: !Ref InstanceType
-      # KeyName: "String"
+      KeyName: !Ref KeyPair
       NetworkInterfaces:
         - AssociatePublicIpAddress: true
           DeviceIndex: 0
