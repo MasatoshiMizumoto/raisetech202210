@@ -2,17 +2,21 @@ version: 2.1
 orbs:
   aws-cli: circleci/aws-cli@3.1.3
 jobs:
-  # cfn-lint:
-  #   executor: aws-cli/default
-  #   steps:
-  #     # - aws-cli/setup:
-  #     #     profile-name: default
-  #     - checkout
-  #     - run: pip install cfn-lint
-  #     - run:
-  #         name: run cfn-lint
-  #         command: |
-  #           cfn-lint -i W3002 -t cfn/*/*.yml
+  # ----------
+  # pre-test
+  # ----------
+  cfn-lint:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - run: pip install cfn-lint
+      - run:
+          name: run cfn-lint
+          command: |
+            cfn-lint -i W3002 -t cfn/*/*.yml
+  # ----------
+  # test
+  # ----------
   tackcat-test:
     executor: aws-cli/default
     steps:
@@ -23,19 +27,71 @@ jobs:
           name: install taskcat
           command: pip install taskcat
       - run:
-          name: testing cfn deployment
+          name: cfn deploy test
           command: |
             cd cfn
-            taskcat test run -m -d
+            taskcat test run -m -l
           no_output_timeout: 30m #default 10m
       - run:
           name: remove taskcat bucket
           command: aws s3 ls | awk '{print $3}' | grep "^tcat" | xargs -I {} aws s3 rb s3://{} --force
+  # ----------
+  # deploy
+  # ----------
+  cloudformation-deploy:
+    executor: aws-cli/default
+    steps:
+      - aws-cli/setup:
+          profile-name: default
+      - checkout
+      - run:
+          name: deploy vpc
+          command: |
+            aws cloudformation deploy \
+              --stack-name raisetech202210-vpc \
+              --template-file cfn/01_network/01_vpc.yml \
+              --capabilities CAPABILITY_NAMED_IAM
+      - run:
+          name: deploy sg
+          command: |
+            aws cloudformation deploy \
+              --stack-name raisetech202210-sg \
+              --template-file cfn/01_network/02_sg.yml \
+              --capabilities CAPABILITY_NAMED_IAM
+      - run:
+          name: deploy ec2
+          command: |
+            aws cloudformation deploy \
+              --stack-name raisetech202210-ec2 \
+              --template-file cfn/02_compute/01_ec2.yml \
+              --capabilities CAPABILITY_NAMED_IAM
+      - run:
+          name: deploy rds
+          command: |
+            aws cloudformation deploy \
+              --stack-name raisetech202210-rds \
+              --template-file cfn/02_compute/02_rds.yml \
+              --capabilities CAPABILITY_NAMED_IAM
+          no_output_timeout: 30m #default 10m
+      - run:
+          name: deploy alb
+          command: |
+            aws cloudformation deploy \
+              --stack-name raisetech202210-alb \
+              --template-file cfn/02_compute/03_alb.yml \
+              --capabilities CAPABILITY_NAMED_IAM
 
 workflows:
   raisetech:
     jobs:
-      # - cfn-lint:
-      #     requires:
-      #       - aws-cli-setup
-      - tackcat-test
+      - cfn-lint
+      - tackcat-test:
+          requires:
+            - cfn-lint
+      - deploy-approve:
+          type: approval
+          requires:
+            - tackcat-test
+      - cloudformation-deploy:
+          requires:
+            - deploy-approve
