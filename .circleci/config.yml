@@ -71,7 +71,8 @@ jobs:
             aws cloudformation deploy \
               --stack-name raisetech202210-rds \
               --template-file cfn/02_compute/02_rds.yml \
-              --capabilities CAPABILITY_NAMED_IAM
+              --capabilities CAPABILITY_NAMED_IAM \
+              --parameter-overrides DbPassword=raisetesh202210!
           no_output_timeout: 30m #default 10m
       - run:
           name: deploy alb
