@@ -122,7 +122,7 @@ jobs:
           name: run serverspec
           command: |
             cd serverspec
-            bundle exec rake spec:raiseteck202210-ec2
+            rake spec:raiseteck202210-ec2
 workflows:
   raisetech:
     jobs:
