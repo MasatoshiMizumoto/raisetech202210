@@ -5,7 +5,7 @@ Parameters:
   BaseName:
     Type: String
     Description: Base name for all resources
-    Default: raistech202210-cfn
+    Default: raisetech202210-cfn
   Email:
     Type: String
     Description: Email address for Alarm

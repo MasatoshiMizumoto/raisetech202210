@@ -93,7 +93,7 @@ jobs:
       - run:
           name: get ec2 public ip
           command: |
-            export EC2_PUBLIC_IP=$(aws ec2 describe-instances --filter "Name=tag:Name,Values=raistech202210-cfn-ec2" --query 'Reservations[].Instances[].PublicIpAddress|[0]' --output text)
+            export EC2_PUBLIC_IP=$(aws ec2 describe-instances --filter "Name=tag:Name,Values=raisetech202210-cfn-ec2" --query 'Reservations[].Instances[].PublicIpAddress|[0]' --output text)
             echo "export EC2_PUBLIC_IP=$EC2_PUBLIC_IP" >> $BASH_ENV
       - run:
           name: add ssh key from aws parameter store
