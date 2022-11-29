@@ -20,6 +20,7 @@ Resources:
     Type: AWS::EC2::KeyPair
     Properties:
       KeyName: !Sub "${BaseName}-keypair"
+      KeyType: rsa
       Tags:
         - Key: "Name"
           Value: !Sub "${BaseName}-keypair"
