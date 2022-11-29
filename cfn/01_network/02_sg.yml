@@ -34,7 +34,7 @@ Resources:
         - Cidr: 54.205.138.102
         - Cidr: 54.208.72.234
         - Cidr: 54.209.115.53
-      MaxEntries: 20 # Required
+      MaxEntries: 30 # Required
       PrefixListName: !Sub "${BaseName}-circleci-iplist" # Required
       Tags:
         - Key: Name
