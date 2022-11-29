@@ -8,6 +8,37 @@ Parameters:
     Default: raisetech202210-cfn
 
 Resources:
+  CircleCiIpList:
+    Type: AWS::EC2::PrefixList
+    Properties:
+      AddressFamily: "IPv4" # Required
+      Entries:
+        - Cidr: 3.228.39.90
+        - Cidr: 18.213.67.41
+        - Cidr: 34.194.94.201
+        - Cidr: 34.194.144.202
+        - Cidr: 34.197.6.234
+        - Cidr: 35.169.17.173
+        - Cidr: 35.174.253.146
+        - Cidr: 52.3.128.216
+        - Cidr: 52.4.195.249
+        - Cidr: 52.5.58.121
+        - Cidr: 52.21.153.129
+        - Cidr: 52.72.72.233
+        - Cidr: 54.92.235.88
+        - Cidr: 54.161.182.76
+        - Cidr: 54.164.161.41
+        - Cidr: 54.166.105.113
+        - Cidr: 54.167.72.230
+        - Cidr: 54.172.26.132
+        - Cidr: 54.205.138.102
+        - Cidr: 54.208.72.234
+        - Cidr: 54.209.115.53
+      MaxEntries: 20 # Required
+      PrefixListName: !Sub "${BaseName}-ec2-sg" # Required
+      Tags:
+        - Key: Name
+          Value: !Sub "${BaseName}-ec2-sg"
   Ec2SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -19,6 +50,11 @@ Resources:
           ToPort: 80
           IpProtocol: "tcp"
           SourceSecurityGroupId: !Ref AlbSecurityGroup
+        - Description: "SSH from CircleCI"
+          FromPort: 22
+          ToPort: 22
+          IpProtocol: "tcp"
+          SourcePrefixListId: !Ref CircleCiIpList
       Tags:
         - Key: "Name"
           Value: !Sub "${BaseName}-ec2-sg"
