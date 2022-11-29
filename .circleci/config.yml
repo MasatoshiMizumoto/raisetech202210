@@ -105,6 +105,7 @@ jobs:
               User ec2-user
               IdentityFile ~/.ssh/id_rsa
             EOF
+            cat ~/.ssh/config
       - run:
           name: add ssh key from aws parameter store
           command: |
