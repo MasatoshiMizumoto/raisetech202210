@@ -86,7 +86,6 @@ jobs:
   # ----------
   serverspec:
     executor: aws-cli/default
-    circleci_ip_ranges: true
     steps:
       - checkout
       - aws-cli/setup:
