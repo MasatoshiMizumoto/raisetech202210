@@ -54,7 +54,8 @@ Resources:
           FromPort: 22
           ToPort: 22
           IpProtocol: "tcp"
-          SourcePrefixListId: !Ref CircleCiIpList
+          # SourcePrefixListId: !Ref CircleCiIpList
+          CidrIp: "0.0.0.0/0"
       Tags:
         - Key: "Name"
           Value: !Sub "${BaseName}-ec2-sg"
