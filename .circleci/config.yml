@@ -110,7 +110,7 @@ jobs:
           name: add ssh key from aws parameter store
           command: |
             mkdir -p ~/.ssh
-            KeyPairID=$(aws ec2 describe-key-pairs --key-names "raistech202210-cfn-keypair" --query 'KeyPairs[].KeyPairId' --output text)
+            KeyPairID=$(aws ec2 describe-key-pairs --key-names "raisetech202210-cfn-keypair" --query 'KeyPairs[].KeyPairId' --output text)
             echo $(aws ssm get-parameter --name /ec2/keypair/${KeyPairID} --with-decryption --query Parameter.Value --output text) > ~/.ssh/id_rsa
             chmod 600 ~/.ssh/id_rsa
       - run:
