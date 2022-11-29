@@ -35,10 +35,10 @@ Resources:
         - Cidr: 54.208.72.234
         - Cidr: 54.209.115.53
       MaxEntries: 20 # Required
-      PrefixListName: !Sub "${BaseName}-ec2-sg" # Required
+      PrefixListName: !Sub "${BaseName}-circleci-iplist" # Required
       Tags:
         - Key: Name
-          Value: !Sub "${BaseName}-ec2-sg"
+          Value: !Sub "${BaseName}-circleci-iplist"
   Ec2SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
