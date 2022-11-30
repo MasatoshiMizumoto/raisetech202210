@@ -119,6 +119,8 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y ruby ruby-dev build-essential
             sudo gem install serverspec
+            sudo gem install ed25519
+            sudo gem install bcrypt_pbkdf
       - run:
           name: run serverspec
           command: |
