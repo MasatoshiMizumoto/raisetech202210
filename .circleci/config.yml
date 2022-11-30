@@ -97,13 +97,13 @@ jobs:
             cat \<< EOF > ~/.ssh/config
             Host raisetech202210-ec2
               HostName ${EC2_PUBLIC_IP}
+              IdentityFile ~/.ssh/raisetech202210.pem
+              User ec2-user
             Host *
               AddKeysToAgent yes
               CheckHostIP no
               StrictHostKeyChecking no
               UserKnownHostsFile=/dev/null
-              User ec2-user
-              IdentityFile ~/.ssh/id_rsa
             EOF
             cat ~/.ssh/config
       - run:
@@ -111,8 +111,8 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             KeyPairID=$(aws ec2 describe-key-pairs --key-names "raisetech202210-cfn-keypair" --query 'KeyPairs[].KeyPairId' --output text)
-            echo $(aws ssm get-parameter --name /ec2/keypair/${KeyPairID} --with-decryption --query Parameter.Value --output text) > ~/.ssh/id_rsa
-            chmod 600 ~/.ssh/id_rsa
+            echo $(aws ssm get-parameter --name /ec2/keypair/${KeyPairID} --with-decryption --query Parameter.Value --output text) > ~/.ssh/raisetech202210.pem
+            chmod 400 ~/.ssh/raisetech202210.pem
       - run:
           name: install serverspec
           command: |
