@@ -111,7 +111,8 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             KeyPairID=$(aws ec2 describe-key-pairs --key-names "raisetech202210-cfn-keypair" --query 'KeyPairs[].KeyPairId' --output text)
-            echo $(aws ssm get-parameter --name /ec2/keypair/${KeyPairID} --with-decryption --query Parameter.Value --output text) > ~/.ssh/raisetech202210.pem
+            echo $(aws ssm get-parameter --name /ec2/keypair/${KeyPairID} --with-decryption --query Parameter.Value) > ~/.ssh/raisetech202210.pem
+            sed -i -e 's/"//g' ~/.ssh/raisetech202210.pem
             chmod 400 ~/.ssh/raisetech202210.pem
       - run:
           name: install serverspec
