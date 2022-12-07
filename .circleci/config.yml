@@ -99,6 +99,7 @@ jobs:
               HostName ${EC2_PUBLIC_IP}
               IdentityFile ~/.ssh/raisetech202210.pem
               User ec2-user
+              IdentitiesOnly yes
             Host *
               AddKeysToAgent yes
               CheckHostIP no
