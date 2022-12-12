@@ -1,0 +1,13 @@
+- name: be sure these app installed "git bzip2 gcc openssl-devel readline-devel zlib-devel gcc-c++ mysql-devel ImageMagick ImageMagick-devel"
+  yum: name={{ item }} state=present
+  with_items:
+    - git
+    - bzip2
+    - gcc
+    - openssl-devel
+    - readline-devel
+    - zlib-devel
+    - gcc-c++
+    - mysql-devel
+    - ImageMagick
+    - ImageMagick-devel

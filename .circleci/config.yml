@@ -2,12 +2,19 @@ version: 2.1
 orbs:
   aws-cli: circleci/aws-cli@3.1.3
 commands:
-  create-ssh-config:
+  get-public-ip:
+    steps:
+      - run:
+          name: get public ip
+          command: |
+            EC2_PUBLIC_IP=$(aws ec2 describe-instances --filter "Name=tag:Name,Values=raisetech202210-cfn-ec2" --query 'Reservations[].Instances[].PublicIpAddress|[0]' --output text)
+            echo "export EC2_PUBLIC_IP=${EC2_PUBLIC_IP}" >> $BASH_ENV
+  setup-ssh-config:
     steps:
       - run:
           name: create ssh-config
           command: |
-            EC2_PUBLIC_IP=$(aws ec2 describe-instances --filter "Name=tag:Name,Values=raisetech202210-cfn-ec2" --query 'Reservations[].Instances[].PublicIpAddress|[0]' --output text)
+            # EC2_PUBLIC_IP=$(aws ec2 describe-instances --filter "Name=tag:Name,Values=raisetech202210-cfn-ec2" --query 'Reservations[].Instances[].PublicIpAddress|[0]' --output text)
             cat \<< EOF > ~/.ssh/config
             Host raisetech202210-ec2
               HostName ${EC2_PUBLIC_IP}
@@ -66,7 +73,7 @@ jobs:
           name: remove taskcat bucket
           command: aws s3 ls | awk '{print $3}' | grep "^tcat" | xargs -I {} aws s3 rb s3://{} --force
   # ----------
-  # deploy
+  # infra deploy
   # ----------
   cloudformation-deploy:
     executor: aws-cli/default
@@ -112,7 +119,30 @@ jobs:
               --template-file cfn/02_compute/03_alb.yml \
               --capabilities CAPABILITY_NAMED_IAM
   # ----------
-  # OS test
+  # middle deploy
+  # ----------
+  ansible:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - aws-cli/setup:
+          profile-name: default
+      - get-public-ip
+      - setup-ssh-config
+      - run:
+          name: install ansible
+          command: |
+            yum install ansible -y
+      - run:
+          name: run ansible
+          command: |
+            cd ansible
+            echo ${EC2_PUBLIC_IP} >> production_inventory
+            ansible-playbook -i production_inventory production_playbook.yml
+
+
+  # ----------
+  # middle test
   # ----------
   serverspec:
     executor: aws-cli/default
@@ -120,32 +150,8 @@ jobs:
       - checkout
       - aws-cli/setup:
           profile-name: default
-      - create-ssh-config
-      # - run:
-      #     name: create ssh-config
-      #     command: |
-      #       EC2_PUBLIC_IP=$(aws ec2 describe-instances --filter "Name=tag:Name,Values=raisetech202210-cfn-ec2" --query 'Reservations[].Instances[].PublicIpAddress|[0]' --output text)
-      #       cat \<< EOF > ~/.ssh/config
-      #       Host raisetech202210-ec2
-      #         HostName ${EC2_PUBLIC_IP}
-      #         IdentityFile ~/.ssh/raisetech202210.pem
-      #         User ec2-user
-      #         IdentitiesOnly yes
-      #       Host *
-      #         AddKeysToAgent yes
-      #         CheckHostIP no
-      #         StrictHostKeyChecking no
-      #         UserKnownHostsFile=/dev/null
-      #       EOF
-      #       cat ~/.ssh/config
-      # - run:
-      #     name: add ssh key from aws parameter store
-      #     command: |
-      #       mkdir -p ~/.ssh
-      #       KeyPairID=$(aws ec2 describe-key-pairs --key-names "raisetech202210-cfn-keypair" --query 'KeyPairs[].KeyPairId' --output text)
-      #       echo "$(aws ssm get-parameter --name /ec2/keypair/${KeyPairID} --with-decryption --query Parameter.Value --output text)" > ~/.ssh/raisetech202210.pem
-      #       #sed -i -e 's/"//g' ~/.ssh/raisetech202210.pem
-      #       chmod 400 ~/.ssh/raisetech202210.pem
+      - get-public-ip
+      - setup-ssh-config
       - run:
           name: install serverspec
           command: |
@@ -173,6 +179,9 @@ workflows:
       - cloudformation-deploy:
           requires:
             - deploy-approve
+      - ansible:
+          requires:
+            - cloudformation-deploy
       - serverspec:
           requires:
             - cloudformation-deploy

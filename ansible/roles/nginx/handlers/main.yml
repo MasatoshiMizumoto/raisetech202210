@@ -1,0 +1,5 @@
+# notifyでトリガーを受け取ると実行
+# - name: restart ntpd
+#   service:
+#     name: ntpd
+#     state: restarted
