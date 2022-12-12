@@ -140,7 +140,7 @@ jobs:
           name: run ansible
           command: |
             cd ansible
-            echo ${EC2_PUBLIC_IP} >> production_inventory
+            echo raisetech202210-ec2 >> production_inventory
             ansible-playbook -i production_inventory production_playbook.yml
 
 
