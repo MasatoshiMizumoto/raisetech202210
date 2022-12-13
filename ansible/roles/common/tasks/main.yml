@@ -11,3 +11,20 @@
     - mysql-devel
     - ImageMagick
     - ImageMagick-devel
+  ignore_errors: yes
+  register: yum_install
+
+- name: run yum install
+  yum: name={{ item }} state=present
+  with_items:
+    - git
+    - bzip2
+    - gcc
+    - openssl-devel
+    - readline-devel
+    - zlib-devel
+    - gcc-c++
+    - mysql-devel
+    - ImageMagick
+    - ImageMagick-devel
+  when: yum_install is failed
