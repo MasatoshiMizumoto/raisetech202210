@@ -11,4 +11,5 @@
     - mysql-devel
     - ImageMagick
     - ImageMagick-devel
+    - gpg2
   become: yes
