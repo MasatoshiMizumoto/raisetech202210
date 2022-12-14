@@ -1,3 +1,4 @@
 - hosts: production
   roles:
     - common
+    - rails

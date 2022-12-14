@@ -1,0 +1,13 @@
+- name: check if rvm is installed
+  stat: path=/home/{{ rails_user }}/.rvm/scripts/rvm
+  register: rvm_installed
+  become: yes
+  become_user: "{{ rails_user }}"
+
+- name: setup rvm
+  shell: "curl -sSL https://get.rvm.io | bash -s stable"
+  become: yes
+  become_user: "{{ rails_user }}"
+  args:
+    creates: "/home/{{ rails_user }}/.rvm/scripts/rvm"
+  when: rvm_installed is not defined
