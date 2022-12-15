@@ -137,6 +137,11 @@ jobs:
             sudo apt-add-repository --yes --update ppa:ansible/ansible
             sudo apt-get install -y ansible
       - run:
+          name: install galaxy role rvm
+          command: |
+            cd ansible
+            ansible-galaxy install rvm.ruby --roles-path ansible/roles
+      - run:
           name: run ansible
           command: |
             cd ansible

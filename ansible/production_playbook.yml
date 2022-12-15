@@ -2,3 +2,4 @@
   roles:
     - common
     - rails
+    - rvm.ruby
