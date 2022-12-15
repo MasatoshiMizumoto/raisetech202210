@@ -1,0 +1,3 @@
+- name: install nginx on amazon linux 2
+  command: amazon-linux-extras install nginx1 -y
+  become: yes
