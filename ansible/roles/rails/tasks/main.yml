@@ -6,7 +6,7 @@
   when: rails_user is defined
 
 - name: install gpg keys
-  shell: "gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB"
+  shell: "gpg2 --keyserver hkp://keys.openpgp.org:80 --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB"
   when: rvm_installed.stat.exists == false and rails_user is defined
 
 - name: setup rvm
