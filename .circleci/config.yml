@@ -172,13 +172,14 @@ workflows:
   raisetech:
     jobs:
       - cfn-lint
-      - taskcat-test:
-          requires:
-            - cfn-lint
+      # - taskcat-test:
+      #     requires:
+      #       - cfn-lint
       - deploy-approve:
           type: approval
           requires:
-            - taskcat-test
+            # - taskcat-test
+            - cfn-lint
       - cloudformation-deploy:
           requires:
             - deploy-approve
@@ -187,4 +188,4 @@ workflows:
             - cloudformation-deploy
       - serverspec:
           requires:
-            - cloudformation-deploy
+            - ansible
